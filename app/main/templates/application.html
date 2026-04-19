@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Apply to Position</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="text-primary">{{ position.title }}</h5>
+                    </div>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <!-- Statement of Interest -->
+                        <div class="mb-3">
+                            {{ form.statement.label(class="form-label fw-bold") }}
+                            {{ form.statement(class="form-control", rows="5", placeholder="Explain why you're interested in this position...") }}
+                            {% for err in form.statement.errors %}
+                                <div class="text-danger mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Reference Selection (if required) -->
+                        {% if position.reference_required %}
+                        <div class="mb-3">
+                            {{ form.reference_id.label(class="form-label fw-bold") }}
+                            {{ form.reference_id(class="form-select") }}
+                            {% for err in form.reference_id.errors %}
+                                <div class="text-danger mt-1">{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
