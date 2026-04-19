@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="mb-3">Student Profile</h1>
+
+            <h4>Username: {{ student.username }}</h4>
+            <p><b>Name:</b> {{ student.get_firstname() or '' }} {{ student.get_lastname() or '' }}</p>
+            <p><b>Email:</b> {{ student.get_email() or '' }}</p>
+            <p><b>GPA:</b> {{ student.get_gpa() or 'N/A' }}</p>
+
+            <hr>
+
+            <h5>Major(s)</h5>
+            {% if student.get_majors() %}
+                <ul>
+                    {% for major in student.get_majors() %}
+                        <li>{{ major.get_major_name() }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Student is not associated with any majors.</p>
+            {% endif %}
+
+            <h5>Interested Research Topics</h5>
+            {% if student.get_topics() %}
+                <ul>
+                    {% for topic in student.get_topics() %}
+                        <li>{{ topic.get_topic_name() }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Student is not associated with any research topics.</p>
+            {% endif %}
+
+            <h5>Programming Languages</h5>
+            {% if student.get_languages() %}
+                <ul>
+                    {% for lang in student.get_languages() %}
+                        <li>{{ lang.get_language_name() }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Student is not associated with any programming languages.</p>
+            {% endif %}
+
+            <h5>Completed Coursework</h5>
+            {% if student.get_coursework() %}
+                <ul>
+                    {% for course in student.get_coursework() %}
+                        <li>
+                            {{ course.coursework.coursenum }} - {{ course.coursework.title }} :
+                            Grade - {{ course.grade }}, Instructor: {{ course.coursework.instructor }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Student has not completed any coursework.</p>
+            {% endif %}
+
+            {% if student.id == current_user.id %}
+                <a href="{{ url_for('main.edit_student_profile') }}" class="btn btn-primary mt-3">Edit Your Profile</a>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% import 'bootstrap_wtf.html' as wtf %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">User Sign In</h4>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        {{ wtf.form_field(form.email) }}
+                        {{ wtf.form_field(form.password) }}
+                        {{ wtf.form_field(form.remember_me) }}
+
+                        <div class="d-grid mt-3">
+                            {{ wtf.form_field(form.submit) }}
+                        </div>
+                    </form>
+                    <div class="d-flex align-items-center my-3">
+                        <hr class="flex-grow-1">
+                        <span class="mx-2">OR</span>
+                        <hr class="flex-grow-1">
+                    </div>
+                    <div>
+                        <a href="{{ url_for('auth.ssologin') }}" 
+                        class='btn btn-primary mb-3' role="button"> 
+                        Login with SSO </a> <br>
+                    </div>
+
+                    <hr>
+
+                    <p class="mb-1">New Faculty? 
+                        <a href="{{ url_for('auth.register_faculty') }}">Click to Register!</a>
+                    </p>
+                    <p>New Student? 
+                        <a href="{{ url_for('auth.register_student') }}">Click to Register!</a>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

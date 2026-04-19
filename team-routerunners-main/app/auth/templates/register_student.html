@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% import 'bootstrap_wtf.html' as wtf %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Student Registration</h4>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" id="registration-form" action="{{ url_for('auth.register_student') }}">
+                        {{ form.hidden_tag() }}
+
+                        {{ wtf.form_field(form.username) }}
+                        {{ wtf.form_field(form.firstname) }}
+                        {{ wtf.form_field(form.lastname) }}
+                        {{ wtf.form_field(form.email) }}
+                        {{ wtf.form_field(form.gpa) }}
+                        {{ wtf.form_field(form.password) }}
+                        {{ wtf.form_field(form.password2) }}
+
+                        {{ wtf.form_field(form.topics_students) }}
+                        {{ wtf.form_field(form.majors_of_student) }}
+                        {{ wtf.form_field(form.languages_students) }}
+
+                        <div class="mb-3">
+                            {{ form.coursework_students.label(class="form-label") }}
+                            {{ form.coursework_students(id="coursework-select", class="form-select mb-3 ms-3 border-0") }}
+                        </div>
+
+                        <!-- Dynamic grade fields will appear here -->
+                        <div id="grade-fields" class="mt-3"></div>
+
+                        <!-- Error message container -->
+                        <div id="grade-error" class="alert alert-danger mt-2" style="display:none;"></div>
+
+                        <div class="d-grid mt-3">
+                            {{ wtf.form_field(form.submit) }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const courseworkCheckboxes = document.querySelectorAll('#coursework-select input[type="checkbox"]');
+    const gradeFields = document.getElementById('grade-fields');
+    const registrationForm = document.getElementById('registration-form');
+    const gradeError = document.getElementById('grade-error');
+
+    function updateGradeFields() {
+        gradeFields.innerHTML = '';
+        gradeError.style.display = 'none';
+
+        courseworkCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const label = checkbox.parentElement.textContent.trim();
+                const courseworkId = checkbox.value;
+
+                const div = document.createElement('div');
+                div.className = 'mb-3';
+                div.innerHTML = `
+                    <label class="form-label"><strong>Grade for ${label}:</strong></label>
+                    <select name="grade_${courseworkId}" class="form-select grade-select" data-coursework="${label}">
+                        <option value="">-- Select Grade --</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="NR">NR</option>
+                    </select>
+                `;
+                gradeFields.appendChild(div);
+            }
+        });
+    }
+
+    registrationForm.addEventListener('submit', function(e) {
+        const gradeSelects = document.querySelectorAll('.grade-select');
+        let missingGrades = [];
+        let isValid = true;
+
+        gradeSelects.forEach(select => {
+            if (!select.value) {
+                isValid = false;
+                select.classList.add('is-invalid');
+                missingGrades.push(select.getAttribute('data-coursework'));
+            } else {
+                select.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            gradeError.textContent = 'Please select grades for: ' + missingGrades.join(', ');
+            gradeError.style.display = 'block';
+            gradeError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            gradeError.style.display = 'none';
+        }
+    });
+
+    courseworkCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateGradeFields);
+    });
+
+    // Initialize on page load
+    updateGradeFields();
+});
+</script>
+
+<style>
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+#grade-error {
+    font-weight: bold;
+}
+</style>
+{% endblock %}

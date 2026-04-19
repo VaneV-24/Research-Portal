@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- FACULTY INFO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="mb-3">Faculty Profile</h1>
+
+            <h4>Username: {{ faculty.username }}</h4>
+            <p><b>Name:</b> {{ faculty.firstname or '' }} {{ faculty.lastname or '' }}</p>
+            <p><b>Email:</b> {{ faculty.email or '' }}</p>
+        </div>
+    </div>
+
+    <hr>
+
+    <h1>Reference Requests</h1>
+    <div class="accordion" id="referenceAccordion">
+    {% for ref in reference_data %}
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingRef{{ ref.application_id }}">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseRef{{ ref.application_id }}"
+                    aria-expanded="false"
+                    aria-controls="collapseRef{{ ref.application_id }}">
+                
+                {{ ref.student.firstname }} {{ ref.student.lastname }}
+                — applying to {{ ref.position.title }}
+                ({{ ref.status}})
+            </button>
+        </h2>
+
+        <div id="collapseRef{{ ref.application_id }}"
+             class="accordion-collapse collapse"
+             aria-labelledby="headingRef{{ ref.application_id }}"
+             data-bs-parent="#referenceAccordion">
+
+            <div class="accordion-body">
+                <p><strong>Student:</strong> {{ ref.student.firstname }} {{ ref.student.lastname }}</p>
+                <p><strong>Position:</strong> {{ ref.position.title }}</p>
+                <p><strong>Status:</strong> {{ ref.status }}</p>
+
+                <!-- Buttons for recommending or not -->
+                <form method="post" action="{{ url_for('main.recommend_student', application_id=ref.application_id) }}">
+                    <button class="btn btn-success btn-sm">Recommend</button>
+                </form>
+
+                <form method="post" action="{{ url_for('main.not_recommend_student', application_id=ref.application_id) }}" class="mt-2">
+                    <button class="btn btn-danger btn-sm">Not Recommend</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    {% else %}
+        <p class="text-muted">No reference requests at this time.</p>
+    {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
